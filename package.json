@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "verify:rls": "node scripts/verify-rls.mjs",
-    "verify:isolation": "node scripts/verify-tenant-isolation.mjs"
+    "verify:isolation": "node scripts/verify-tenant-isolation.mjs",
+    "db:migrate": "node scripts/apply-migration.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -39,6 +40,7 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "pg": "^8.22.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

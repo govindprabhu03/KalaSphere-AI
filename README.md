@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ravindra Bhavan Sankhali — Platform
 
-## Getting Started
+The digital home of **Ravindra Bhavan Sankhali, Goa**: events, workshops, cultural
+classes, student growth, venue booking, canteen, community and more — a full
+cultural-institution platform, built to expand to every Ravindra Bhavan in Goa.
 
-First, run the development server:
+Multi-tenant · role-based · AI-assisted · PWA-first.
+
+> **Status:** Phase 0 (foundation) complete. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+> for the full plan and phased roadmap.
+
+## Tech stack
+
+Next.js 16 · TypeScript · Tailwind v4 · shadcn/ui · Framer Motion · TanStack Query ·
+Supabase (Postgres + RLS + Auth + Storage + Realtime) · Razorpay (later) · Gemini (later).
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. The app runs with placeholder credentials — Supabase
+features stay disabled until you connect a project (below).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Connect Supabase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a project at [supabase.com](https://supabase.com).
+2. Copy `.env.example` to `.env.local` and fill in, from **Project Settings → API**:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` (server-only — never expose to the browser)
+3. Apply the schema: run `supabase/migrations/0001_init_tenancy.sql` in the Supabase
+   **SQL Editor** (or `supabase db push` with the Supabase CLI).
+4. Verify security:
+   ```bash
+   npm run verify:rls         # anon cannot read protected tables
+   npm run verify:isolation   # two orgs cannot see each other's data
+   ```
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run typecheck` | TypeScript check (no emit) |
+| `npm run lint` | ESLint |
+| `npm run verify:rls` | RLS smoke test (anonymous access denied) |
+| `npm run verify:isolation` | Tenant-isolation proof (org A ≠ org B) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project layout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).

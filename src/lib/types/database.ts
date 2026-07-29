@@ -223,6 +223,26 @@ export interface Database {
         Args: { org: string; roles: string[] };
         Returns: boolean;
       };
+      create_organization: {
+        Args: { org_name: string; org_slug: string };
+        Returns: Database["public"]["Tables"]["organizations"]["Row"];
+      };
+      add_member_by_email: {
+        Args: { org: string; member_email: string; member_role: string };
+        Returns: Database["public"]["Tables"]["organization_members"]["Row"];
+      };
+      list_org_members: {
+        Args: { org: string };
+        Returns: {
+          member_id: string;
+          user_id: string;
+          role: string;
+          status: string;
+          full_name: string | null;
+          email: string | null;
+          created_at: string;
+        }[];
+      };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };

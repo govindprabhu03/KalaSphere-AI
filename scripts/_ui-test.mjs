@@ -38,7 +38,7 @@ const mode = process.argv[2];
 if (mode === "create") {
   const existing = await findUser(EMAIL);
   if (existing) await deleteUserAndOrgs(existing.id);
-  const { data, error } = await admin.auth.admin.createUser({
+  const { error } = await admin.auth.admin.createUser({
     email: EMAIL,
     password: PW,
     email_confirm: true,

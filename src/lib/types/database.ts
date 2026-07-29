@@ -204,6 +204,179 @@ export interface Database {
         };
         Relationships: [];
       };
+      events: {
+        Row: {
+          id: string;
+          organization_id: string;
+          slug: string;
+          title: string;
+          description: string | null;
+          category: string | null;
+          location_text: string | null;
+          starts_at: string;
+          ends_at: string | null;
+          capacity: number | null;
+          price_cents: number;
+          currency: string;
+          cover_image_url: string | null;
+          is_published: boolean;
+          registration_closes_at: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          slug: string;
+          title: string;
+          description?: string | null;
+          category?: string | null;
+          location_text?: string | null;
+          starts_at: string;
+          ends_at?: string | null;
+          capacity?: number | null;
+          price_cents?: number;
+          currency?: string;
+          cover_image_url?: string | null;
+          is_published?: boolean;
+          registration_closes_at?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          slug?: string;
+          title?: string;
+          description?: string | null;
+          category?: string | null;
+          location_text?: string | null;
+          starts_at?: string;
+          ends_at?: string | null;
+          capacity?: number | null;
+          price_cents?: number;
+          currency?: string;
+          cover_image_url?: string | null;
+          is_published?: boolean;
+          registration_closes_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      event_registrations: {
+        Row: {
+          id: string;
+          event_id: string;
+          organization_id: string;
+          user_id: string;
+          status: string;
+          payment_status: string;
+          amount_cents: number;
+          ticket_code: string | null;
+          checked_in_at: string | null;
+          checked_in_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          organization_id: string;
+          user_id: string;
+          status?: string;
+          payment_status?: string;
+          amount_cents?: number;
+          ticket_code?: string | null;
+          checked_in_at?: string | null;
+          checked_in_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          status?: string;
+          payment_status?: string;
+          ticket_code?: string | null;
+          checked_in_at?: string | null;
+          checked_in_by?: string | null;
+        };
+        Relationships: [];
+      };
+      event_feedback: {
+        Row: {
+          id: string;
+          event_id: string;
+          organization_id: string;
+          user_id: string;
+          rating: number;
+          comment: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          organization_id: string;
+          user_id: string;
+          rating: number;
+          comment?: string | null;
+          created_at?: string;
+        };
+        Update: { rating?: number; comment?: string | null };
+        Relationships: [];
+      };
+      certificates: {
+        Row: {
+          id: string;
+          organization_id: string;
+          event_id: string | null;
+          user_id: string;
+          serial: string;
+          title: string;
+          issued_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          event_id?: string | null;
+          user_id: string;
+          serial: string;
+          title: string;
+          issued_at?: string;
+        };
+        Update: { title?: string };
+        Relationships: [];
+      };
+      payments: {
+        Row: {
+          id: string;
+          organization_id: string;
+          user_id: string | null;
+          registration_id: string | null;
+          provider: string;
+          provider_order_id: string | null;
+          provider_payment_id: string | null;
+          amount_cents: number;
+          currency: string;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          user_id?: string | null;
+          registration_id?: string | null;
+          provider?: string;
+          provider_order_id?: string | null;
+          provider_payment_id?: string | null;
+          amount_cents: number;
+          currency?: string;
+          status?: string;
+          created_at?: string;
+        };
+        Update: {
+          provider_order_id?: string | null;
+          provider_payment_id?: string | null;
+          status?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -241,6 +414,47 @@ export interface Database {
           full_name: string | null;
           email: string | null;
           created_at: string;
+        }[];
+      };
+      register_for_event: {
+        Args: { p_event_id: string };
+        Returns: Database["public"]["Tables"]["event_registrations"]["Row"];
+      };
+      check_in_ticket: {
+        Args: { p_code: string };
+        Returns: {
+          registration_id: string;
+          attendee: string;
+          event_title: string;
+          already: boolean;
+        }[];
+      };
+      list_event_registrations: {
+        Args: { p_event_id: string };
+        Returns: {
+          registration_id: string;
+          user_id: string;
+          full_name: string | null;
+          email: string | null;
+          status: string;
+          payment_status: string;
+          ticket_code: string | null;
+          checked_in_at: string | null;
+          created_at: string;
+        }[];
+      };
+      submit_event_feedback: {
+        Args: { p_event_id: string; p_rating: number; p_comment: string };
+        Returns: Database["public"]["Tables"]["event_feedback"]["Row"];
+      };
+      public_org_by_slug: {
+        Args: { p_slug: string };
+        Returns: {
+          id: string;
+          name: string;
+          slug: string;
+          primary_color: string;
+          logo_url: string | null;
         }[];
       };
     };

@@ -1,11 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import type { EventState } from "@/lib/events/actions";
+import { generateEventDescriptionAction } from "@/lib/ai/actions";
 
 export type EventDefaults = {
   title?: string;
@@ -31,9 +33,27 @@ export function EventForm({
 }) {
   const [state, formAction, pending] = useActionState(action, {} as EventState);
   const d = defaults ?? {};
+  const formRef = useRef<HTMLFormElement>(null);
+  const descRef = useRef<HTMLTextAreaElement>(null);
+  const [aiPending, startAi] = useTransition();
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  function generate() {
+    const form = formRef.current;
+    if (!form) return;
+    const fd = new FormData(form);
+    const title = String(fd.get("title") ?? "");
+    const category = String(fd.get("category") ?? "");
+    startAi(async () => {
+      setAiError(null);
+      const r = await generateEventDescriptionAction(title, category);
+      if (r.error) setAiError(r.error);
+      else if (r.answer && descRef.current) descRef.current.value = r.answer;
+    });
+  }
 
   return (
-    <form action={formAction} className="grid gap-4">
+    <form ref={formRef} action={formAction} className="grid gap-4">
       <div className="grid gap-1.5">
         <Label htmlFor="title">Title</Label>
         <Input id="title" name="title" defaultValue={d.title} required />
@@ -73,14 +93,21 @@ export function EventForm({
       </div>
 
       <div className="grid gap-1.5">
-        <Label htmlFor="description">Description</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="description">Description</Label>
+          <Button type="button" variant="ghost" size="xs" onClick={generate} disabled={aiPending}>
+            <Sparkles className="size-3.5" /> {aiPending ? "Generating…" : "Generate with AI"}
+          </Button>
+        </div>
         <textarea
           id="description"
           name="description"
+          ref={descRef}
           rows={5}
           defaultValue={d.description}
           className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
+        {aiError && <p className="text-xs text-destructive">{aiError}</p>}
       </div>
 
       {showPublish && (

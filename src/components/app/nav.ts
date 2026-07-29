@@ -15,6 +15,7 @@ import {
   Megaphone,
   Images,
   Palette,
+  Sparkles,
   Ticket,
   ScanLine,
 } from "lucide-react";
@@ -30,6 +31,7 @@ export type NavItem = {
 /** Sidebar navigation. Grows as later phases add modules. */
 export const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: "all" },
+  { label: "AI Assistant", href: "/dashboard/assistant", icon: Sparkles, roles: "all" },
   {
     label: "Events",
     href: "/dashboard/events",

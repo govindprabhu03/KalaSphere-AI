@@ -15,7 +15,7 @@ export function AppSidebar({
           RB
         </span>
         <p className="truncate font-heading text-sm font-semibold">
-          {orgName ?? "Ravindra Bhavan"}
+          {orgName ?? "KalaSphere"}
         </p>
       </div>
       <div className="flex-1 overflow-y-auto p-3">

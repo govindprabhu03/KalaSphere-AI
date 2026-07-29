@@ -36,7 +36,7 @@ export function Hero() {
           className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground"
         >
           <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
-          In development · Sankhali, Goa
+          AI-powered · Built for cultural institutions
         </motion.span>
 
         <motion.h1

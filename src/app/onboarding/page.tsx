@@ -23,7 +23,7 @@ export default async function OnboardingPage() {
       <div className="w-full max-w-md">
         <Card className="py-6">
           <CardHeader>
-            <CardTitle className="text-lg">Set up your Ravindra Bhavan</CardTitle>
+            <CardTitle className="text-lg">Set up your organization</CardTitle>
             <CardDescription>
               Create your organization to get started — you&apos;ll be its admin.
             </CardDescription>
@@ -31,7 +31,7 @@ export default async function OnboardingPage() {
           <CardContent>
             <CreateOrgForm />
             <p className="mt-4 text-sm text-muted-foreground">
-              Joining an existing Ravindra Bhavan instead? Ask its admin to add you
+              Joining an existing organization instead? Ask its admin to add you
               with your email, then log in again.
             </p>
           </CardContent>

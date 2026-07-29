@@ -32,7 +32,7 @@ export function MobileNav({
       </SheetTrigger>
       <SheetContent side="left" className="w-64 p-0">
         <SheetHeader>
-          <SheetTitle>{orgName ?? "Ravindra Bhavan"}</SheetTitle>
+          <SheetTitle>{orgName ?? "KalaSphere"}</SheetTitle>
         </SheetHeader>
         <div className="p-3">
           <SidebarNav role={role} onNavigate={() => setOpen(false)} />

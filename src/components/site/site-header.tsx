@@ -13,11 +13,10 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-pink-600 text-xs font-bold text-white">
-            RB
+            KS
           </span>
           <span className="font-heading text-sm font-semibold leading-tight sm:text-base">
-            Ravindra Bhavan
-            <span className="hidden text-muted-foreground sm:inline"> · Sankhali</span>
+            KalaSphere<span className="text-primary"> AI</span>
           </span>
         </Link>
 

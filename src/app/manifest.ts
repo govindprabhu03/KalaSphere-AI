@@ -6,10 +6,10 @@ import type { MetadataRoute } from "next";
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Ravindra Bhavan Sankhali",
-    short_name: "Ravindra Bhavan",
+    name: "KalaSphere AI",
+    short_name: "KalaSphere",
     description:
-      "Events, workshops, cultural classes, venue booking, canteen and community.",
+      "The AI platform for cultural institutions — events, classes, venues and more.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

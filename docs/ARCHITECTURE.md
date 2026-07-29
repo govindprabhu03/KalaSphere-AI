@@ -1,7 +1,7 @@
 # Architecture
 
-The digital platform for **Ravindra Bhavan Sankhali, Goa** — a full cultural-institution
-ERP, not just event management. One codebase serves many Ravindra Bhavans (multi-tenant).
+**KalaSphere AI** — an AI-powered, multi-tenant ERP for cultural institutions (not just
+event management). One codebase serves many institutions, each a tenant "organization".
 
 ## Stack
 

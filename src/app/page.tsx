@@ -78,11 +78,11 @@ export default function Home() {
         <section id="about" className="border-t border-border/60 bg-muted/30">
           <div className="mx-auto max-w-3xl px-4 py-16 text-center">
             <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-              Built for the community, expandable to all of Goa
+              One platform for every cultural institution
             </h2>
             <p className="mt-3 text-muted-foreground">
-              A multi-tenant system: one codebase can serve every Ravindra Bhavan,
-              each with its own branding, users, events and data — kept strictly
+              A multi-tenant system: one platform serves many institutions, each
+              with its own branding, users, events and data — kept strictly
               separate at the database level.
             </p>
             <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-1 text-xs font-medium text-muted-foreground">

@@ -18,15 +18,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(env.siteUrl),
   title: {
-    default: "Ravindra Bhavan Sankhali",
-    template: "%s · Ravindra Bhavan Sankhali",
+    default: "KalaSphere AI",
+    template: "%s · KalaSphere AI",
   },
   description:
-    "Events, workshops, cultural classes, venue booking, canteen and community — the digital home of Ravindra Bhavan Sankhali, Goa.",
-  applicationName: "Ravindra Bhavan",
+    "The AI-powered platform for cultural institutions — events, workshops, classes, venue booking, canteen and community.",
+  applicationName: "KalaSphere AI",
   appleWebApp: {
     capable: true,
-    title: "Ravindra Bhavan",
+    title: "KalaSphere AI",
     statusBarStyle: "default",
   },
 };

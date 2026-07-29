@@ -8,6 +8,9 @@ import {
   LineChart,
   Building2,
   CalendarCheck,
+  UtensilsCrossed,
+  ChefHat,
+  ShoppingBag,
   Ticket,
   ScanLine,
 } from "lucide-react";
@@ -49,6 +52,19 @@ export const NAV_ITEMS: NavItem[] = [
     roles: ["admin", "super_admin"],
   },
   { label: "Bookings", href: "/dashboard/bookings", icon: CalendarCheck, roles: "all" },
+  {
+    label: "Canteen",
+    href: "/dashboard/canteen",
+    icon: UtensilsCrossed,
+    roles: ["admin", "super_admin"],
+  },
+  {
+    label: "Kitchen",
+    href: "/dashboard/kitchen",
+    icon: ChefHat,
+    roles: ["admin", "faculty", "super_admin"],
+  },
+  { label: "My orders", href: "/dashboard/orders", icon: ShoppingBag, roles: "all" },
   {
     label: "Check-in",
     href: "/dashboard/scan",

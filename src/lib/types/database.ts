@@ -686,6 +686,76 @@ export interface Database {
         Update: { status?: string };
         Relationships: [];
       };
+      menu_items: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          description: string | null;
+          category: string | null;
+          price_cents: number;
+          is_available: boolean;
+          created_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          name: string;
+          description?: string | null;
+          category?: string | null;
+          price_cents?: number;
+          is_available?: boolean;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          category?: string | null;
+          price_cents?: number;
+          is_available?: boolean;
+        };
+        Relationships: [];
+      };
+      orders: {
+        Row: {
+          id: string;
+          organization_id: string;
+          user_id: string;
+          order_number: string;
+          status: string;
+          total_cents: number;
+          created_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          user_id: string;
+          order_number: string;
+          status?: string;
+          total_cents?: number;
+        };
+        Update: { status?: string };
+        Relationships: [];
+      };
+      order_items: {
+        Row: {
+          id: string;
+          order_id: string;
+          organization_id: string;
+          menu_item_id: string | null;
+          name_snapshot: string;
+          price_cents: number;
+          qty: number;
+          created_at: string;
+        };
+        Insert: {
+          order_id: string;
+          organization_id: string;
+          menu_item_id?: string | null;
+          name_snapshot: string;
+          price_cents: number;
+          qty?: number;
+        };
+        Update: { qty?: number };
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -876,6 +946,26 @@ export interface Database {
       list_venue_busy: {
         Args: { p_venue: string };
         Returns: { starts_at: string; ends_at: string; title: string }[];
+      };
+      place_order: {
+        Args: { p_org: string; p_items: Json };
+        Returns: Database["public"]["Tables"]["orders"]["Row"];
+      };
+      update_order_status: {
+        Args: { p_order: string; p_status: string };
+        Returns: Database["public"]["Tables"]["orders"]["Row"];
+      };
+      list_kitchen_orders: {
+        Args: { p_org: string };
+        Returns: {
+          order_id: string;
+          order_number: string;
+          status: string;
+          total_cents: number;
+          requester: string;
+          items: string | null;
+          created_at: string;
+        }[];
       };
     };
     Enums: { [_ in never]: never };

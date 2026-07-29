@@ -625,6 +625,67 @@ export interface Database {
         Update: { remarks?: string | null };
         Relationships: [];
       };
+      venues: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          description: string | null;
+          capacity: number | null;
+          base_rate_cents: number;
+          facilities: string[];
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          name: string;
+          description?: string | null;
+          capacity?: number | null;
+          base_rate_cents?: number;
+          facilities?: string[];
+          is_active?: boolean;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          capacity?: number | null;
+          base_rate_cents?: number;
+          facilities?: string[];
+          is_active?: boolean;
+        };
+        Relationships: [];
+      };
+      venue_bookings: {
+        Row: {
+          id: string;
+          organization_id: string;
+          venue_id: string;
+          user_id: string;
+          title: string;
+          starts_at: string;
+          ends_at: string;
+          status: string;
+          facilities: string[];
+          notes: string | null;
+          decided_by: string | null;
+          decided_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          venue_id: string;
+          user_id: string;
+          title: string;
+          starts_at: string;
+          ends_at: string;
+          status?: string;
+          facilities?: string[];
+          notes?: string | null;
+        };
+        Update: { status?: string };
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -782,6 +843,39 @@ export interface Database {
           full_name: string | null;
           email: string | null;
         }[];
+      };
+      request_booking: {
+        Args: {
+          p_venue: string;
+          p_starts: string;
+          p_ends: string;
+          p_title: string;
+          p_facilities: string[];
+          p_notes: string;
+        };
+        Returns: Database["public"]["Tables"]["venue_bookings"]["Row"];
+      };
+      decide_booking: {
+        Args: { p_booking: string; p_approve: boolean };
+        Returns: Database["public"]["Tables"]["venue_bookings"]["Row"];
+      };
+      list_org_bookings: {
+        Args: { p_org: string };
+        Returns: {
+          booking_id: string;
+          venue_name: string;
+          title: string;
+          requester: string;
+          starts_at: string;
+          ends_at: string;
+          status: string;
+          facilities: string[];
+          notes: string | null;
+        }[];
+      };
+      list_venue_busy: {
+        Args: { p_venue: string };
+        Returns: { starts_at: string; ends_at: string; title: string }[];
       };
     };
     Enums: { [_ in never]: never };

@@ -6,6 +6,8 @@ import {
   GraduationCap,
   Music2,
   LineChart,
+  Building2,
+  CalendarCheck,
   Ticket,
   ScanLine,
 } from "lucide-react";
@@ -40,6 +42,13 @@ export const NAV_ITEMS: NavItem[] = [
     roles: ["admin", "faculty", "super_admin"],
   },
   { label: "Growth", href: "/dashboard/growth", icon: LineChart, roles: "all" },
+  {
+    label: "Venues",
+    href: "/dashboard/venues",
+    icon: Building2,
+    roles: ["admin", "super_admin"],
+  },
+  { label: "Bookings", href: "/dashboard/bookings", icon: CalendarCheck, roles: "all" },
   {
     label: "Check-in",
     href: "/dashboard/scan",

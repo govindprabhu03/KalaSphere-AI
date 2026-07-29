@@ -12,6 +12,7 @@
     "verify:isolation": "node scripts/verify-tenant-isolation.mjs",
     "verify:phase1": "node scripts/verify-phase1.mjs",
     "verify:phase2": "node scripts/verify-phase2.mjs",
+    "verify:phase3": "node scripts/verify-phase3.mjs",
     "db:migrate": "node scripts/apply-migration.mjs"
   },
   "dependencies": {

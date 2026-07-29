@@ -3,6 +3,8 @@ import {
   LayoutDashboard,
   Users,
   CalendarDays,
+  GraduationCap,
+  Music2,
   Ticket,
   ScanLine,
 } from "lucide-react";
@@ -23,6 +25,18 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/dashboard/events",
     icon: CalendarDays,
     roles: ["admin", "super_admin"],
+  },
+  {
+    label: "Workshops",
+    href: "/dashboard/workshops",
+    icon: GraduationCap,
+    roles: ["admin", "super_admin"],
+  },
+  {
+    label: "Classes",
+    href: "/dashboard/classes",
+    icon: Music2,
+    roles: ["admin", "faculty", "super_admin"],
   },
   {
     label: "Check-in",

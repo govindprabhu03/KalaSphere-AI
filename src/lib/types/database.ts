@@ -377,6 +377,224 @@ export interface Database {
         };
         Relationships: [];
       };
+      workshops: {
+        Row: {
+          id: string;
+          organization_id: string;
+          slug: string;
+          title: string;
+          description: string | null;
+          category: string | null;
+          starts_at: string | null;
+          ends_at: string | null;
+          capacity: number | null;
+          price_cents: number;
+          currency: string;
+          is_published: boolean;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          slug: string;
+          title: string;
+          description?: string | null;
+          category?: string | null;
+          starts_at?: string | null;
+          ends_at?: string | null;
+          capacity?: number | null;
+          price_cents?: number;
+          currency?: string;
+          is_published?: boolean;
+          created_by?: string | null;
+        };
+        Update: {
+          slug?: string;
+          title?: string;
+          description?: string | null;
+          category?: string | null;
+          starts_at?: string | null;
+          ends_at?: string | null;
+          capacity?: number | null;
+          price_cents?: number;
+          is_published?: boolean;
+        };
+        Relationships: [];
+      };
+      workshop_enrollments: {
+        Row: {
+          id: string;
+          workshop_id: string;
+          organization_id: string;
+          user_id: string;
+          status: string;
+          payment_status: string;
+          amount_cents: number;
+          created_at: string;
+        };
+        Insert: {
+          workshop_id: string;
+          organization_id: string;
+          user_id: string;
+          status?: string;
+          payment_status?: string;
+          amount_cents?: number;
+        };
+        Update: { status?: string; payment_status?: string };
+        Relationships: [];
+      };
+      classes: {
+        Row: {
+          id: string;
+          organization_id: string;
+          slug: string;
+          title: string;
+          description: string | null;
+          discipline: string | null;
+          fee_cents: number;
+          currency: string;
+          is_published: boolean;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          slug: string;
+          title: string;
+          description?: string | null;
+          discipline?: string | null;
+          fee_cents?: number;
+          currency?: string;
+          is_published?: boolean;
+          created_by?: string | null;
+        };
+        Update: {
+          slug?: string;
+          title?: string;
+          description?: string | null;
+          discipline?: string | null;
+          fee_cents?: number;
+          is_published?: boolean;
+        };
+        Relationships: [];
+      };
+      batches: {
+        Row: {
+          id: string;
+          class_id: string;
+          organization_id: string;
+          name: string;
+          faculty_user_id: string | null;
+          schedule_text: string | null;
+          capacity: number | null;
+          created_at: string;
+        };
+        Insert: {
+          class_id: string;
+          organization_id: string;
+          name: string;
+          faculty_user_id?: string | null;
+          schedule_text?: string | null;
+          capacity?: number | null;
+        };
+        Update: {
+          name?: string;
+          faculty_user_id?: string | null;
+          schedule_text?: string | null;
+          capacity?: number | null;
+        };
+        Relationships: [];
+      };
+      class_enrollments: {
+        Row: {
+          id: string;
+          batch_id: string;
+          class_id: string;
+          organization_id: string;
+          student_user_id: string;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          batch_id: string;
+          class_id: string;
+          organization_id: string;
+          student_user_id: string;
+          status?: string;
+        };
+        Update: { status?: string };
+        Relationships: [];
+      };
+      class_sessions: {
+        Row: {
+          id: string;
+          batch_id: string;
+          organization_id: string;
+          title: string | null;
+          session_date: string;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          batch_id: string;
+          organization_id: string;
+          title?: string | null;
+          session_date: string;
+          created_by?: string | null;
+        };
+        Update: { title?: string | null; session_date?: string };
+        Relationships: [];
+      };
+      class_attendance: {
+        Row: {
+          id: string;
+          session_id: string;
+          batch_id: string;
+          organization_id: string;
+          student_user_id: string;
+          present: boolean;
+          created_at: string;
+        };
+        Insert: {
+          session_id: string;
+          batch_id: string;
+          organization_id: string;
+          student_user_id: string;
+          present?: boolean;
+        };
+        Update: { present?: boolean };
+        Relationships: [];
+      };
+      assignments: {
+        Row: {
+          id: string;
+          batch_id: string;
+          organization_id: string;
+          title: string;
+          description: string | null;
+          due_date: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          batch_id: string;
+          organization_id: string;
+          title: string;
+          description?: string | null;
+          due_date?: string | null;
+          created_by?: string | null;
+        };
+        Update: {
+          title?: string;
+          description?: string | null;
+          due_date?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -456,6 +674,42 @@ export interface Database {
           primary_color: string;
           logo_url: string | null;
         }[];
+      };
+      enroll_in_workshop: {
+        Args: { p_workshop_id: string };
+        Returns: Database["public"]["Tables"]["workshop_enrollments"]["Row"];
+      };
+      enroll_in_class: {
+        Args: { p_batch_id: string };
+        Returns: Database["public"]["Tables"]["class_enrollments"]["Row"];
+      };
+      mark_class_attendance: {
+        Args: { p_session_id: string; p_student: string; p_present: boolean };
+        Returns: Database["public"]["Tables"]["class_attendance"]["Row"];
+      };
+      list_batch_students: {
+        Args: { p_batch_id: string };
+        Returns: {
+          enrollment_id: string;
+          student_user_id: string;
+          full_name: string | null;
+          email: string | null;
+          status: string;
+        }[];
+      };
+      list_workshop_enrollments: {
+        Args: { p_workshop_id: string };
+        Returns: {
+          enrollment_id: string;
+          user_id: string;
+          full_name: string | null;
+          email: string | null;
+          payment_status: string;
+        }[];
+      };
+      class_is_published: {
+        Args: { cid: string };
+        Returns: boolean;
       };
     };
     Enums: { [_ in never]: never };

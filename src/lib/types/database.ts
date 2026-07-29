@@ -756,6 +756,97 @@ export interface Database {
         Update: { qty?: number };
         Relationships: [];
       };
+      news_posts: {
+        Row: {
+          id: string;
+          organization_id: string;
+          slug: string;
+          title: string;
+          body: string | null;
+          cover_image_url: string | null;
+          is_published: boolean;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          slug: string;
+          title: string;
+          body?: string | null;
+          cover_image_url?: string | null;
+          is_published?: boolean;
+          created_by?: string | null;
+        };
+        Update: {
+          title?: string;
+          body?: string | null;
+          cover_image_url?: string | null;
+          is_published?: boolean;
+        };
+        Relationships: [];
+      };
+      announcements: {
+        Row: {
+          id: string;
+          organization_id: string;
+          message: string;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: { organization_id: string; message: string; created_by?: string | null };
+        Update: { message?: string };
+        Relationships: [];
+      };
+      gallery_items: {
+        Row: {
+          id: string;
+          organization_id: string;
+          title: string | null;
+          image_url: string;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          title?: string | null;
+          image_url: string;
+          created_by?: string | null;
+        };
+        Update: { title?: string | null };
+        Relationships: [];
+      };
+      artist_profiles: {
+        Row: {
+          id: string;
+          organization_id: string;
+          user_id: string;
+          stage_name: string;
+          discipline: string | null;
+          bio: string | null;
+          links: string | null;
+          is_public: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          user_id: string;
+          stage_name: string;
+          discipline?: string | null;
+          bio?: string | null;
+          links?: string | null;
+          is_public?: boolean;
+        };
+        Update: {
+          stage_name?: string;
+          discipline?: string | null;
+          bio?: string | null;
+          links?: string | null;
+          is_public?: boolean;
+        };
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {

@@ -11,6 +11,10 @@ import {
   UtensilsCrossed,
   ChefHat,
   ShoppingBag,
+  Newspaper,
+  Megaphone,
+  Images,
+  Palette,
   Ticket,
   ScanLine,
 } from "lucide-react";
@@ -72,6 +76,25 @@ export const NAV_ITEMS: NavItem[] = [
     roles: ["admin", "faculty", "super_admin"],
   },
   { label: "My tickets", href: "/dashboard/tickets", icon: Ticket, roles: "all" },
+  {
+    label: "News",
+    href: "/dashboard/news",
+    icon: Newspaper,
+    roles: ["admin", "super_admin"],
+  },
+  {
+    label: "Announcements",
+    href: "/dashboard/announcements",
+    icon: Megaphone,
+    roles: ["admin", "super_admin"],
+  },
+  {
+    label: "Gallery",
+    href: "/dashboard/gallery",
+    icon: Images,
+    roles: ["admin", "super_admin"],
+  },
+  { label: "Community", href: "/dashboard/community", icon: Palette, roles: "all" },
   {
     label: "Members",
     href: "/dashboard/members",

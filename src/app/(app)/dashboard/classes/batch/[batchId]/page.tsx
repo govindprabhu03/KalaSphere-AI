@@ -3,8 +3,11 @@ import { notFound, redirect } from "next/navigation";
 import { requireContext } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { AddSessionForm } from "./add-session-form";
 import { AttendanceGrid } from "./attendance-grid";
+import { LinkParentForm } from "./link-parent-form";
 
 export const metadata = { title: "Batch" };
 
@@ -16,6 +19,7 @@ export default async function BatchDetailPage({
   const { batchId } = await params;
   const ctx = await requireContext();
   if (!["admin", "faculty", "super_admin"].includes(ctx.role)) redirect("/dashboard");
+  const isAdmin = ctx.role === "admin" || ctx.role === "super_admin";
 
   const supabase = await createClient();
   const { data: batch } = await supabase
@@ -31,9 +35,8 @@ export default async function BatchDetailPage({
     .select("id, title")
     .eq("id", batch.class_id)
     .maybeSingle();
-  const { data: students } = await supabase.rpc("list_batch_students", {
-    p_batch_id: batchId,
-  });
+  const { data: students } = await supabase.rpc("list_batch_students", { p_batch_id: batchId });
+  const stu = students ?? [];
   const { data: sessions } = await supabase
     .from("class_sessions")
     .select("*")
@@ -66,12 +69,12 @@ export default async function BatchDetailPage({
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_260px]">
         <div>
           <h2 className="mb-3 text-sm font-medium text-muted-foreground">
-            Attendance · {(students ?? []).length} students · {sessRows.length} sessions
+            Attendance · {stu.length} students · {sessRows.length} sessions
           </h2>
           <Card className="p-4">
             <AttendanceGrid
               batchId={batchId}
-              students={students ?? []}
+              students={stu}
               sessions={sessRows.map((s) => ({
                 id: s.id,
                 title: s.title,
@@ -93,6 +96,44 @@ export default async function BatchDetailPage({
           </Card>
         </div>
       </div>
+
+      <h2 className="mt-8 mb-3 text-sm font-medium text-muted-foreground">Students</h2>
+      <Card className="p-4">
+        {stu.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No students enrolled yet.</p>
+        ) : (
+          <div className="divide-y divide-border/40">
+            {stu.map((s) => (
+              <div
+                key={s.enrollment_id}
+                className="flex flex-wrap items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+              >
+                <div className="min-w-0">
+                  <p className="truncate font-medium">{s.full_name ?? s.email}</p>
+                  {s.full_name && (
+                    <p className="truncate text-xs text-muted-foreground">{s.email}</p>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/dashboard/classes/batch/${batchId}/evaluate/${s.student_user_id}`}
+                    className={cn(buttonVariants({ variant: "outline", size: "xs" }))}
+                  >
+                    Evaluate
+                  </Link>
+                  <Link
+                    href={`/dashboard/growth/${s.student_user_id}`}
+                    className={cn(buttonVariants({ variant: "ghost", size: "xs" }))}
+                  >
+                    Growth
+                  </Link>
+                  {isAdmin && <LinkParentForm studentId={s.student_user_id} />}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

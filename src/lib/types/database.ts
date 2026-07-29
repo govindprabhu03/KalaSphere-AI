@@ -595,6 +595,36 @@ export interface Database {
         };
         Relationships: [];
       };
+      student_evaluations: {
+        Row: {
+          id: string;
+          organization_id: string;
+          batch_id: string | null;
+          student_user_id: string;
+          period: string;
+          pitch: number | null;
+          rhythm: number | null;
+          voice: number | null;
+          confidence: number | null;
+          coordination: number | null;
+          expression: number | null;
+          practice: number | null;
+          attendance_score: number | null;
+          performance: number | null;
+          remarks: string | null;
+          evaluated_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          student_user_id: string;
+          period: string;
+          batch_id?: string | null;
+        };
+        Update: { remarks?: string | null };
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -710,6 +740,48 @@ export interface Database {
       class_is_published: {
         Args: { cid: string };
         Returns: boolean;
+      };
+      is_parent_of: {
+        Args: { child: string };
+        Returns: boolean;
+      };
+      upsert_evaluation: {
+        Args: {
+          p_batch_id: string;
+          p_student: string;
+          p_period: string;
+          p_pitch: number;
+          p_rhythm: number;
+          p_voice: number;
+          p_confidence: number;
+          p_coordination: number;
+          p_expression: number;
+          p_practice: number;
+          p_attendance: number;
+          p_performance: number;
+          p_remarks: string;
+        };
+        Returns: Database["public"]["Tables"]["student_evaluations"]["Row"];
+      };
+      list_student_growth: {
+        Args: { p_student: string };
+        Returns: Database["public"]["Tables"]["student_evaluations"]["Row"][];
+      };
+      student_display_name: {
+        Args: { p_student: string };
+        Returns: string;
+      };
+      link_parent_to_student: {
+        Args: { p_org: string; p_parent_email: string; p_student: string };
+        Returns: Database["public"]["Tables"]["parent_child_links"]["Row"];
+      };
+      list_my_children: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          child_user_id: string;
+          full_name: string | null;
+          email: string | null;
+        }[];
       };
     };
     Enums: { [_ in never]: never };

@@ -5,6 +5,7 @@ import {
   CalendarDays,
   GraduationCap,
   Music2,
+  LineChart,
   Ticket,
   ScanLine,
 } from "lucide-react";
@@ -38,6 +39,7 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Music2,
     roles: ["admin", "faculty", "super_admin"],
   },
+  { label: "Growth", href: "/dashboard/growth", icon: LineChart, roles: "all" },
   {
     label: "Check-in",
     href: "/dashboard/scan",

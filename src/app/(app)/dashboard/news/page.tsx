@@ -61,7 +61,7 @@ export default async function NewsPage() {
               <CardTitle className="text-sm">New post</CardTitle>
             </CardHeader>
             <CardContent>
-              <NewsForm />
+              <NewsForm orgId={ctx.activeOrgId!} />
             </CardContent>
           </Card>
         </div>

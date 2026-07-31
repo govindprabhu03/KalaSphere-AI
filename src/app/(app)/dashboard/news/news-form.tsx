@@ -5,8 +5,9 @@ import { createNewsAction, type ContentState } from "@/lib/content/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ImageUpload } from "@/components/app/image-upload";
 
-export function NewsForm() {
+export function NewsForm({ orgId }: { orgId: string }) {
   const [state, action, pending] = useActionState(createNewsAction, {} as ContentState);
   return (
     <form action={action} className="grid gap-3">
@@ -15,8 +16,8 @@ export function NewsForm() {
         <Input id="title" name="title" required />
       </div>
       <div className="grid gap-1.5">
-        <Label htmlFor="cover_image_url">Cover image URL</Label>
-        <Input id="cover_image_url" name="cover_image_url" placeholder="https://…" />
+        <Label>Cover image</Label>
+        <ImageUpload name="cover_image_url" orgId={orgId} />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="body">Body</Label>

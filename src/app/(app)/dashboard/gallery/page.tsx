@@ -25,7 +25,7 @@ export default async function GalleryAdminPage() {
       <h1 className="mb-4 font-heading text-2xl font-semibold tracking-tight">Gallery</h1>
       <Card className="mb-6 py-5">
         <CardContent>
-          <GalleryForm />
+          <GalleryForm orgId={ctx.activeOrgId!} />
         </CardContent>
       </Card>
 

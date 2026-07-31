@@ -595,6 +595,40 @@ export interface Database {
         };
         Relationships: [];
       };
+      assignment_submissions: {
+        Row: {
+          id: string;
+          assignment_id: string;
+          batch_id: string;
+          organization_id: string;
+          student_user_id: string;
+          content: string | null;
+          attachment_url: string | null;
+          status: string;
+          grade: string | null;
+          feedback: string | null;
+          submitted_at: string;
+          graded_at: string | null;
+          graded_by: string | null;
+        };
+        Insert: {
+          assignment_id: string;
+          batch_id: string;
+          organization_id: string;
+          student_user_id: string;
+          content?: string | null;
+          attachment_url?: string | null;
+          status?: string;
+        };
+        Update: {
+          content?: string | null;
+          attachment_url?: string | null;
+          status?: string;
+          grade?: string | null;
+          feedback?: string | null;
+        };
+        Relationships: [];
+      };
       student_evaluations: {
         Row: {
           id: string;
@@ -1081,6 +1115,53 @@ export interface Database {
           recipient_name: string;
           event_title: string | null;
           org_name: string;
+        }[];
+      };
+      submit_assignment: {
+        Args: {
+          p_assignment_id: string;
+          p_content: string;
+          p_attachment_url: string;
+        };
+        Returns: Database["public"]["Tables"]["assignment_submissions"]["Row"];
+      };
+      grade_assignment: {
+        Args: {
+          p_submission_id: string;
+          p_grade: string;
+          p_feedback: string;
+        };
+        Returns: Database["public"]["Tables"]["assignment_submissions"]["Row"];
+      };
+      list_my_assignments: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          assignment_id: string;
+          title: string;
+          description: string | null;
+          due_date: string | null;
+          batch_name: string;
+          class_title: string;
+          submission_status: string | null;
+          my_content: string | null;
+          my_attachment_url: string | null;
+          my_grade: string | null;
+          my_feedback: string | null;
+        }[];
+      };
+      list_assignment_submissions: {
+        Args: { p_assignment_id: string };
+        Returns: {
+          submission_id: string;
+          student_user_id: string;
+          full_name: string | null;
+          email: string | null;
+          content: string | null;
+          attachment_url: string | null;
+          status: string;
+          grade: string | null;
+          feedback: string | null;
+          submitted_at: string;
         }[];
       };
     };

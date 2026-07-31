@@ -3,11 +3,13 @@ import { notFound, redirect } from "next/navigation";
 import { requireContext } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AddSessionForm } from "./add-session-form";
 import { AttendanceGrid } from "./attendance-grid";
 import { LinkParentForm } from "./link-parent-form";
+import { AddAssignmentForm } from "./add-assignment-form";
+import { deleteAssignmentAction } from "@/lib/assignments/actions";
 
 export const metadata = { title: "Batch" };
 
@@ -53,6 +55,13 @@ export default async function BatchDetailPage({
     present[`${a.session_id}:${a.student_user_id}`] = a.present;
   }
 
+  const { data: assignments } = await supabase
+    .from("assignments")
+    .select("*")
+    .eq("batch_id", batchId)
+    .order("created_at", { ascending: false });
+  const asgRows = assignments ?? [];
+
   return (
     <div className="mx-auto max-w-4xl">
       <Link
@@ -92,6 +101,57 @@ export default async function BatchDetailPage({
             </CardHeader>
             <CardContent>
               <AddSessionForm batchId={batchId} />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <h2 className="mt-8 mb-3 text-sm font-medium text-muted-foreground">Assignments</h2>
+      <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
+        <div>
+          {asgRows.length === 0 ? (
+            <Card className="p-6 text-center text-sm text-muted-foreground">
+              No assignments yet — create one to collect student work.
+            </Card>
+          ) : (
+            <div className="grid gap-3">
+              {asgRows.map((a) => (
+                <Card key={a.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-medium">{a.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {a.due_date
+                          ? `Due ${new Date(a.due_date).toLocaleDateString()}`
+                          : "No due date"}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <Link
+                        href={`/dashboard/classes/batch/${batchId}/assignment/${a.id}`}
+                        className={cn(buttonVariants({ variant: "outline", size: "xs" }))}
+                      >
+                        Submissions
+                      </Link>
+                      <form action={deleteAssignmentAction.bind(null, a.id, batchId)}>
+                        <Button type="submit" variant="ghost" size="xs">
+                          Delete
+                        </Button>
+                      </form>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+        <div>
+          <Card className="py-5">
+            <CardHeader>
+              <CardTitle className="text-sm">New assignment</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AddAssignmentForm batchId={batchId} />
             </CardContent>
           </Card>
         </div>

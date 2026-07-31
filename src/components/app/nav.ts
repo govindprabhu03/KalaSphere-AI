@@ -19,6 +19,7 @@ import {
   Ticket,
   ScanLine,
   Award,
+  NotebookPen,
 } from "lucide-react";
 import type { AppRole } from "@/lib/auth/roles";
 
@@ -52,6 +53,7 @@ export const NAV_ITEMS: NavItem[] = [
     roles: ["admin", "faculty", "super_admin"],
   },
   { label: "Growth", href: "/dashboard/growth", icon: LineChart, roles: "all" },
+  { label: "Assignments", href: "/dashboard/assignments", icon: NotebookPen, roles: "all" },
   {
     label: "Venues",
     href: "/dashboard/venues",

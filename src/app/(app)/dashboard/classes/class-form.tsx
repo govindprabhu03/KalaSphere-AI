@@ -10,10 +10,17 @@ export function ClassForm({
   action,
   submitLabel,
   showPublish,
+  defaults,
 }: {
   action: (prev: ClassState, fd: FormData) => Promise<ClassState>;
   submitLabel: string;
   showPublish?: boolean;
+  defaults?: {
+    title?: string;
+    discipline?: string;
+    fee?: number;
+    description?: string;
+  };
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ClassState);
 
@@ -21,16 +28,34 @@ export function ClassForm({
     <form action={formAction} className="grid gap-4">
       <div className="grid gap-1.5">
         <Label htmlFor="title">Class title</Label>
-        <Input id="title" name="title" placeholder="Hindustani Vocal" required />
+        <Input
+          id="title"
+          name="title"
+          placeholder="Hindustani Vocal"
+          defaultValue={defaults?.title}
+          required
+        />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="grid gap-1.5">
           <Label htmlFor="discipline">Discipline</Label>
-          <Input id="discipline" name="discipline" placeholder="Vocal, Tabla, Kathak…" />
+          <Input
+            id="discipline"
+            name="discipline"
+            placeholder="Vocal, Tabla, Kathak…"
+            defaultValue={defaults?.discipline}
+          />
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor="fee">Monthly fee (₹, 0 = free)</Label>
-          <Input id="fee" name="fee" type="number" min="0" step="1" defaultValue={0} />
+          <Input
+            id="fee"
+            name="fee"
+            type="number"
+            min="0"
+            step="1"
+            defaultValue={defaults?.fee ?? 0}
+          />
         </div>
       </div>
       <div className="grid gap-1.5">
@@ -39,6 +64,7 @@ export function ClassForm({
           id="description"
           name="description"
           rows={4}
+          defaultValue={defaults?.description}
           className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
       </div>
@@ -49,6 +75,7 @@ export function ClassForm({
         </label>
       )}
       {state.error && <p className="text-sm text-destructive">{state.error}</p>}
+      {state.message && <p className="text-sm text-emerald-600">{state.message}</p>}
       <div>
         <Button type="submit" disabled={pending}>
           {pending ? "Saving…" : submitLabel}

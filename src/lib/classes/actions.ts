@@ -60,6 +60,34 @@ export async function createClassAction(
   redirect(`/dashboard/classes/${data.id}`);
 }
 
+export async function updateClassAction(
+  classId: string,
+  _p: ClassState,
+  fd: FormData,
+): Promise<ClassState> {
+  const ctx = await requireAdminOrg();
+  const title = fstr(fd, "title");
+  if (!title) return { error: "Title is required." };
+  const feeRupees = Number(fstr(fd, "fee") ?? "0") || 0;
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("classes")
+    .update({
+      title,
+      description: fstr(fd, "description"),
+      discipline: fstr(fd, "discipline"),
+      fee_cents: Math.max(0, Math.round(feeRupees * 100)),
+    })
+    .eq("id", classId)
+    .eq("organization_id", ctx.activeOrgId!);
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/classes");
+  revalidatePath(`/dashboard/classes/${classId}`);
+  return { message: "Saved." };
+}
+
 export async function setClassPublishedAction(id: string, published: boolean) {
   const ctx = await requireAdminOrg();
   const supabase = await createClient();

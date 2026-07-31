@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ExternalLink, Users } from "lucide-react";
+import { ExternalLink, Users, Pencil } from "lucide-react";
 import { requireContext } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -65,6 +65,12 @@ export default async function ClassDetailPage({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={`/dashboard/classes/${cls.id}/edit`}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+          >
+            <Pencil className="size-4" /> Edit
+          </Link>
           {cls.is_published && org && (
             <a
               href={`/o/${org.slug}/classes/${cls.slug}`}

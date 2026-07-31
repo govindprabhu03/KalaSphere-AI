@@ -1,6 +1,16 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { Users, Ticket, Music2, Building2, UtensilsCrossed } from "lucide-react";
+import {
+  Users,
+  Ticket,
+  Music2,
+  GraduationCap,
+  TrendingUp,
+  Building2,
+  UtensilsCrossed,
+  MessagesSquare,
+  Sparkles,
+} from "lucide-react";
 import { requireContext } from "@/lib/auth/context";
 import { ROLE_LABELS } from "@/lib/auth/roles";
 import {
@@ -15,13 +25,18 @@ import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Dashboard" };
 
-type ComingSoon = { icon: LucideIcon; title: string; description: string };
+type Module = { icon: LucideIcon; title: string; description: string; href: string };
 
-const COMING_SOON: ComingSoon[] = [
-  { icon: Ticket, title: "Events", description: "Create events, take registrations and payments (Phase 2)." },
-  { icon: Music2, title: "Cultural Classes", description: "Batches, attendance and student growth (Phase 3–4)." },
-  { icon: Building2, title: "Venue Booking", description: "Availability calendar and approvals (Phase 5)." },
-  { icon: UtensilsCrossed, title: "Canteen", description: "Menu, orders and kitchen board (Phase 6)." },
+/** Modules every member can reach, regardless of role. */
+const MODULES: Module[] = [
+  { icon: Sparkles, title: "AI Assistant", description: "Ask about your events, classes, bookings and more.", href: "/dashboard/assistant" },
+  { icon: Ticket, title: "Events", description: "Browse events, register and get your QR tickets.", href: "/dashboard/events" },
+  { icon: Music2, title: "Workshops", description: "Discover and enrol in upcoming workshops.", href: "/dashboard/workshops" },
+  { icon: GraduationCap, title: "Cultural Classes", description: "Batches, attendance and enrolment.", href: "/dashboard/classes" },
+  { icon: TrendingUp, title: "Growth", description: "Track student progress and skill assessments.", href: "/dashboard/growth" },
+  { icon: Building2, title: "Venues", description: "Check availability and request bookings.", href: "/dashboard/venues" },
+  { icon: UtensilsCrossed, title: "Canteen", description: "Browse the menu and place your order.", href: "/dashboard/canteen" },
+  { icon: MessagesSquare, title: "Community", description: "News, announcements and the community board.", href: "/dashboard/community" },
 ];
 
 export default async function DashboardPage() {
@@ -66,21 +81,27 @@ export default async function DashboardPage() {
 
       <div>
         <h2 className="mb-3 text-sm font-medium text-muted-foreground">
-          Coming soon
+          Explore
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {COMING_SOON.map((m) => {
+          {MODULES.map((m) => {
             const Icon = m.icon;
             return (
-              <Card key={m.title} className="opacity-80">
-                <CardHeader>
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                    <Icon className="size-5" />
-                  </div>
-                  <CardTitle className="mt-3">{m.title}</CardTitle>
-                  <CardDescription>{m.description}</CardDescription>
-                </CardHeader>
-              </Card>
+              <Link
+                key={m.title}
+                href={m.href}
+                className="group rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+              >
+                <Card className="h-full transition-colors group-hover:border-ring/60">
+                  <CardHeader>
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <Icon className="size-5" />
+                    </div>
+                    <CardTitle className="mt-3">{m.title}</CardTitle>
+                    <CardDescription>{m.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
             );
           })}
         </div>

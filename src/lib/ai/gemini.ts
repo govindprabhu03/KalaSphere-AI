@@ -21,7 +21,10 @@ export async function geminiGenerate(prompt: string, system?: string): Promise<s
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
-        generationConfig: { temperature: 0.7, maxOutputTokens: 800 },
+        // `gemini-flash-latest` is a thinking model: reasoning tokens are drawn
+        // from the same budget as the visible answer (and can be several hundred
+        // tokens), so keep this high enough that the answer isn't starved/truncated.
+        generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
       }),
     },
   );

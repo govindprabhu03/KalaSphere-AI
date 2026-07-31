@@ -1058,6 +1058,31 @@ export interface Database {
           created_at: string;
         }[];
       };
+      issue_event_certificates: {
+        Args: { p_event_id: string; p_title: string };
+        Returns: number;
+      };
+      list_my_certificates: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          serial: string;
+          title: string;
+          issued_at: string;
+          event_title: string | null;
+          org_name: string;
+        }[];
+      };
+      certificate_by_serial: {
+        Args: { p_serial: string };
+        Returns: {
+          serial: string;
+          title: string;
+          issued_at: string;
+          recipient_name: string;
+          event_title: string | null;
+          org_name: string;
+        }[];
+      };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };

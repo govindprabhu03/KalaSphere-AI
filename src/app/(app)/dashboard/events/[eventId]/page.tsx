@@ -12,6 +12,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { IssueCertificates } from "./issue-certificates";
 
 export default async function EventDetailPage({
   params,
@@ -104,6 +105,19 @@ export default async function EventDetailPage({
           </CardContent>
         </Card>
       )}
+
+      <Card className="mb-6">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+          <div>
+            <p className="text-sm font-medium">Certificates</p>
+            <p className="text-xs text-muted-foreground">
+              Issue a certificate to everyone who has checked in ({attended} so
+              far). Recipients find it under their Certificates page.
+            </p>
+          </div>
+          <IssueCertificates eventId={event.id} defaultTitle={event.title} />
+        </CardContent>
+      </Card>
 
       <h2 className="mb-3 text-sm font-medium text-muted-foreground">
         Registrations ({rows.length}

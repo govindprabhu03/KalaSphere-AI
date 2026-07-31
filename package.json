@@ -14,6 +14,7 @@
     "verify:phase2": "node scripts/verify-phase2.mjs",
     "verify:phase3": "node scripts/verify-phase3.mjs",
     "verify:more": "node scripts/verify-phases-4-7.mjs",
+    "verify:certs": "node scripts/verify-certificates.mjs",
     "db:migrate": "node scripts/apply-migration.mjs"
   },
   "dependencies": {

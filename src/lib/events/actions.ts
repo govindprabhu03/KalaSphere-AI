@@ -3,8 +3,14 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getOptionalContext } from "@/lib/auth/context";
-import { isRazorpayConfigured } from "@/lib/payments/razorpay";
+import {
+  isRazorpayConfigured,
+  razorpayKeyId,
+  createRazorpayOrder,
+  verifyRazorpaySignature,
+} from "@/lib/payments/razorpay";
 
 export type EventState = { error?: string; message?: string };
 
@@ -165,6 +171,148 @@ export async function registerForEventAction(eventId: string): Promise<EventStat
 
   revalidatePath("/dashboard/tickets");
   redirect("/dashboard/tickets");
+}
+
+// ---------------------------------------------------------------------------
+// Paid events — Razorpay checkout (gated on RAZORPAY_KEY_ID + KEY_SECRET).
+// Flow: createEventOrderAction -> Razorpay Checkout (client) -> Razorpay calls
+// back to the browser -> confirmEventPaymentAction verifies the signature
+// server-side and only then issues the ticket. The "grant a ticket" write is
+// never exposed to the client — it runs through the service-role client after
+// the signature check, so a user can't mark themselves paid without paying.
+// ---------------------------------------------------------------------------
+
+export type EventOrder = {
+  error?: string;
+  keyId?: string;
+  orderId?: string;
+  amountCents?: number;
+  currency?: string;
+  orgName?: string;
+  eventTitle?: string;
+  prefillName?: string;
+  prefillEmail?: string;
+};
+
+export async function createEventOrderAction(eventId: string): Promise<EventOrder> {
+  const ctx = await getOptionalContext();
+  if (!ctx) redirect("/login");
+  if (!isRazorpayConfigured()) {
+    return { error: "Online payment isn't set up yet. Please check back soon." };
+  }
+
+  const supabase = await createClient();
+  const { data: ev } = await supabase
+    .from("events")
+    .select("id, title, price_cents, currency, is_published, organization_id")
+    .eq("id", eventId)
+    .maybeSingle();
+  if (!ev || !ev.is_published) {
+    return { error: "This event is not open for registration." };
+  }
+  if (ev.price_cents <= 0) {
+    return { error: "This is a free event — just register." };
+  }
+
+  // Ensure a (pending) registration exists for this user.
+  const { data: reg, error: regErr } = await supabase.rpc("register_for_event", {
+    p_event_id: eventId,
+  });
+  if (regErr) return { error: regErr.message };
+  if (!reg) return { error: "Could not start registration." };
+  if (reg.payment_status === "paid") {
+    return { error: "You've already paid for this event." };
+  }
+
+  // Create the Razorpay order, then record a 'created' payment row (service role).
+  let order;
+  try {
+    order = await createRazorpayOrder({
+      amountCents: ev.price_cents,
+      currency: ev.currency,
+      receipt: `reg_${reg.id}`.slice(0, 40),
+      notes: { event_id: ev.id, registration_id: reg.id, user_id: ctx.user.id },
+    });
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Could not start payment." };
+  }
+
+  const admin = createAdminClient();
+  await admin.from("payments").insert({
+    organization_id: ev.organization_id,
+    user_id: ctx.user.id,
+    registration_id: reg.id,
+    provider: "razorpay",
+    provider_order_id: order.id,
+    amount_cents: ev.price_cents,
+    currency: ev.currency,
+    status: "created",
+  });
+
+  const { data: org } = await admin
+    .from("organizations")
+    .select("name")
+    .eq("id", ev.organization_id)
+    .maybeSingle();
+
+  const meta = (ctx.user.user_metadata ?? {}) as { full_name?: string };
+  return {
+    keyId: razorpayKeyId(),
+    orderId: order.id,
+    amountCents: ev.price_cents,
+    currency: ev.currency,
+    orgName: org?.name ?? "KalaSphere AI",
+    eventTitle: ev.title,
+    prefillName: meta.full_name,
+    prefillEmail: ctx.user.email ?? undefined,
+  };
+}
+
+export async function confirmEventPaymentAction(input: {
+  orderId: string;
+  paymentId: string;
+  signature: string;
+}): Promise<EventState> {
+  const ctx = await getOptionalContext();
+  if (!ctx) redirect("/login");
+
+  const ok = verifyRazorpaySignature({
+    orderId: input.orderId,
+    paymentId: input.paymentId,
+    signature: input.signature,
+  });
+  if (!ok) return { error: "Payment could not be verified." };
+
+  const admin = createAdminClient();
+  const { data: pay } = await admin
+    .from("payments")
+    .select("id, registration_id, user_id, status")
+    .eq("provider_order_id", input.orderId)
+    .maybeSingle();
+  if (!pay || pay.user_id !== ctx.user.id) {
+    return { error: "Payment record not found." };
+  }
+
+  if (pay.status !== "paid") {
+    await admin
+      .from("payments")
+      .update({ status: "paid", provider_payment_id: input.paymentId })
+      .eq("id", pay.id);
+  }
+
+  if (pay.registration_id) {
+    // Issue the ticket + mark paid. The `.neq` guard keeps it idempotent so a
+    // repeated callback never regenerates an already-issued ticket code.
+    const ticket = crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase();
+    await admin
+      .from("event_registrations")
+      .update({ payment_status: "paid", ticket_code: ticket })
+      .eq("id", pay.registration_id)
+      .neq("payment_status", "paid");
+  }
+
+  revalidatePath("/dashboard/tickets");
+  return { message: "Payment successful — your ticket is ready." };
 }
 
 export async function checkInAction(

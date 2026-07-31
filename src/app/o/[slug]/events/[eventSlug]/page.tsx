@@ -7,7 +7,9 @@ import { PublicOrgHeader } from "@/components/site/public-org-header";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { isRazorpayConfigured } from "@/lib/payments/razorpay";
 import { RegisterButton } from "./register-button";
+import { PayButton } from "./pay-button";
 
 export default async function PublicEventPage({
   params,
@@ -86,6 +88,15 @@ export default async function PublicEventPage({
               >
                 You&apos;re registered — view ticket
               </Link>
+            ) : event.price_cents > 0 ? (
+              isRazorpayConfigured() ? (
+                <PayButton eventId={event.id} priceLabel={price} />
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Online payment for this event isn&apos;t available yet — please
+                  check back soon.
+                </p>
+              )
             ) : (
               <RegisterButton eventId={event.id} priceLabel={price} />
             )}

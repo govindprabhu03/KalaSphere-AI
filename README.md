@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3100 (the dev server is pinned to port 3100).
 
 ## Connect Supabase
 

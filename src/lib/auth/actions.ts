@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
@@ -7,6 +8,24 @@ import { env } from "@/lib/env";
 import { loginSchema, registerSchema } from "@/lib/validation";
 
 export type AuthState = { error?: string; message?: string };
+
+/**
+ * The origin the app is actually being served from, taken from the request
+ * instead of a hardcoded NEXT_PUBLIC_SITE_URL. This keeps OAuth / email-confirm
+ * redirects pointing at the right host+port even when the dev server lands on a
+ * non-default port. Falls back to env.siteUrl if no request headers are present.
+ * NOTE: the resulting `${origin}/auth/callback` must still be in Supabase's
+ * Auth → URL Configuration → Redirect URLs allow-list, or Supabase ignores it
+ * and falls back to the dashboard Site URL.
+ */
+async function requestOrigin(): Promise<string> {
+  const h = await headers();
+  const origin = h.get("origin");
+  if (origin) return origin;
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  return host ? `${proto}://${host}` : env.siteUrl;
+}
 
 export async function signInAction(
   _prev: AuthState,
@@ -47,7 +66,7 @@ export async function signUpAction(
     password: parsed.data.password,
     options: {
       data: { full_name: parsed.data.fullName },
-      emailRedirectTo: `${env.siteUrl}/auth/callback`,
+      emailRedirectTo: `${await requestOrigin()}/auth/callback`,
     },
   });
   if (error) return { error: error.message };
@@ -74,7 +93,7 @@ export async function signInWithGoogleAction() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${env.siteUrl}/auth/callback` },
+    options: { redirectTo: `${await requestOrigin()}/auth/callback` },
   });
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);

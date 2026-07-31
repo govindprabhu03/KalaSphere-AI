@@ -318,3 +318,37 @@ export async function checkInAction(
       : `Checked in: ${row.attendee} — ${row.event_title}`,
   };
 }
+
+export type FeedbackState = { error?: string; message?: string };
+
+/**
+ * Submit (or update) feedback for an event the user registered for. Bound with
+ * the eventId: `submitFeedbackAction.bind(null, eventId)`. The RPC enforces that
+ * the caller actually registered and upserts on (event_id, user_id).
+ */
+export async function submitFeedbackAction(
+  eventId: string,
+  _prev: FeedbackState,
+  fd: FormData,
+): Promise<FeedbackState> {
+  const ctx = await getOptionalContext();
+  if (!ctx) redirect("/login");
+
+  const rating = Number(fd.get("rating"));
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return { error: "Please pick a rating from 1 to 5." };
+  }
+  const comment =
+    typeof fd.get("comment") === "string" ? (fd.get("comment") as string).trim() : "";
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("submit_event_feedback", {
+    p_event_id: eventId,
+    p_rating: rating,
+    p_comment: comment,
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/tickets");
+  return { message: "Thanks — your feedback was saved." };
+}

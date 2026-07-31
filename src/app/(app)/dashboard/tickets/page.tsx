@@ -4,6 +4,7 @@ import { qrDataUrl } from "@/lib/qr";
 import { formatEventDateTime } from "@/lib/format";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FeedbackForm } from "./feedback-form";
 
 export const metadata = { title: "My tickets" };
 
@@ -25,6 +26,14 @@ export default async function TicketsPage() {
     .in("id", eventIds);
   const evById = new Map((events ?? []).map((e) => [e.id, e]));
 
+  // The user's own feedback for these events (to pre-fill / show "update").
+  const { data: myFeedback } = await supabase
+    .from("event_feedback")
+    .select("event_id, rating, comment")
+    .eq("user_id", ctx.user.id)
+    .in("event_id", eventIds);
+  const fbByEvent = new Map((myFeedback ?? []).map((f) => [f.event_id, f]));
+
   const cards = await Promise.all(
     rows.map(async (r) => ({
       reg: r,
@@ -45,36 +54,49 @@ export default async function TicketsPage() {
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {cards.map(({ reg, ev, qr }) => (
-            <Card key={reg.id}>
-              <CardContent className="flex flex-col items-center gap-3">
-                <div className="w-full">
-                  <p className="font-medium">{ev?.title ?? "Event"}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatEventDateTime(ev?.starts_at ?? null)}
-                    {ev?.location_text ? ` · ${ev.location_text}` : ""}
-                  </p>
-                </div>
-                {qr ? (
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={qr}
-                      alt="Ticket QR code"
-                      width={180}
-                      height={180}
-                      className="rounded-lg border border-border/60"
-                    />
-                    <p className="font-mono text-sm tracking-widest">
-                      {reg.ticket_code}
+          {cards.map(({ reg, ev, qr }) => {
+            const started = ev?.starts_at
+              ? new Date(ev.starts_at) < new Date()
+              : false;
+            const fb = fbByEvent.get(reg.event_id);
+            return (
+              <Card key={reg.id}>
+                <CardContent className="flex flex-col items-center gap-3">
+                  <div className="w-full">
+                    <p className="font-medium">{ev?.title ?? "Event"}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatEventDateTime(ev?.starts_at ?? null)}
+                      {ev?.location_text ? ` · ${ev.location_text}` : ""}
                     </p>
-                  </>
-                ) : (
-                  <Badge variant="secondary">Payment pending</Badge>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                  </div>
+                  {qr ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={qr}
+                        alt="Ticket QR code"
+                        width={180}
+                        height={180}
+                        className="rounded-lg border border-border/60"
+                      />
+                      <p className="font-mono text-sm tracking-widest">
+                        {reg.ticket_code}
+                      </p>
+                    </>
+                  ) : (
+                    <Badge variant="secondary">Payment pending</Badge>
+                  )}
+                  {started && (
+                    <FeedbackForm
+                      eventId={reg.event_id}
+                      existingRating={fb?.rating}
+                      existingComment={fb?.comment ?? undefined}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

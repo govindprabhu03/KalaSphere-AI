@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Pencil, ExternalLink } from "lucide-react";
+import { Pencil, ExternalLink, Star } from "lucide-react";
 import { requireContext } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -42,6 +42,18 @@ export default async function EventDetailPage({
   });
   const rows = regs ?? [];
   const attended = rows.filter((r) => r.checked_in_at).length;
+
+  // Feedback for this event (admins can read all of their org's feedback via RLS).
+  const { data: feedback } = await supabase
+    .from("event_feedback")
+    .select("rating, comment, created_at")
+    .eq("event_id", eventId)
+    .order("created_at", { ascending: false });
+  const fbRows = feedback ?? [];
+  const avgRating =
+    fbRows.length > 0
+      ? fbRows.reduce((s, f) => s + f.rating, 0) / fbRows.length
+      : 0;
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -164,6 +176,47 @@ export default async function EventDetailPage({
           </table>
         </div>
       </Card>
+
+      {fbRows.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-muted-foreground">
+            Feedback
+            <span className="inline-flex items-center gap-1 text-amber-500">
+              <Star className="size-3.5 fill-amber-400 text-amber-400" />
+              {avgRating.toFixed(1)}
+            </span>
+            <span>
+              · {fbRows.length} response{fbRows.length === 1 ? "" : "s"}
+            </span>
+          </h2>
+          <Card className="p-0">
+            <ul className="divide-y divide-border/40">
+              {fbRows.map((f, i) => (
+                <li key={i} className="flex items-start gap-3 px-4 py-3">
+                  <span className="inline-flex shrink-0 items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, n) => (
+                      <Star
+                        key={n}
+                        className={cn(
+                          "size-3.5",
+                          n < f.rating
+                            ? "fill-amber-400 text-amber-400"
+                            : "text-muted-foreground/30",
+                        )}
+                      />
+                    ))}
+                  </span>
+                  {f.comment ? (
+                    <p className="text-sm text-foreground/90">{f.comment}</p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No comment</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

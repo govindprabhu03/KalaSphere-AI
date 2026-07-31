@@ -11,6 +11,7 @@ import {
   createRazorpayOrder,
   verifyRazorpaySignature,
 } from "@/lib/payments/razorpay";
+import { fulfillEventPayment } from "@/lib/payments/fulfillment";
 
 export type EventState = { error?: string; message?: string };
 
@@ -283,33 +284,14 @@ export async function confirmEventPaymentAction(input: {
   });
   if (!ok) return { error: "Payment could not be verified." };
 
-  const admin = createAdminClient();
-  const { data: pay } = await admin
-    .from("payments")
-    .select("id, registration_id, user_id, status")
-    .eq("provider_order_id", input.orderId)
-    .maybeSingle();
-  if (!pay || pay.user_id !== ctx.user.id) {
-    return { error: "Payment record not found." };
-  }
-
-  if (pay.status !== "paid") {
-    await admin
-      .from("payments")
-      .update({ status: "paid", provider_payment_id: input.paymentId })
-      .eq("id", pay.id);
-  }
-
-  if (pay.registration_id) {
-    // Issue the ticket + mark paid. The `.neq` guard keeps it idempotent so a
-    // repeated callback never regenerates an already-issued ticket code.
-    const ticket = crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase();
-    await admin
-      .from("event_registrations")
-      .update({ payment_status: "paid", ticket_code: ticket })
-      .eq("id", pay.registration_id)
-      .neq("payment_status", "paid");
-  }
+  // The webhook confirms this too (server-authoritative); whichever lands first
+  // issues the ticket, the other is a safe no-op.
+  const res = await fulfillEventPayment({
+    orderId: input.orderId,
+    paymentId: input.paymentId,
+    expectedUserId: ctx.user.id,
+  });
+  if (!res.ok) return { error: "Payment record not found." };
 
   revalidatePath("/dashboard/tickets");
   return { message: "Payment successful — your ticket is ready." };

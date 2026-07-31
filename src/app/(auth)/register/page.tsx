@@ -20,7 +20,7 @@ export default async function RegisterPage() {
     <Card className="py-6">
       <CardHeader>
         <CardTitle className="text-lg">Create your account</CardTitle>
-        <CardDescription>Join Ravindra Bhavan Sankhali.</CardDescription>
+        <CardDescription>Join KalaSphere AI.</CardDescription>
       </CardHeader>
       <CardContent>
         <RegisterForm />

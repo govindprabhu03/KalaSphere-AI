@@ -24,7 +24,7 @@ export function CreateOrgForm() {
         <Input
           id="name"
           name="name"
-          placeholder="e.g. Ravindra Bhavan Sankhali"
+          placeholder="e.g. Sunrise Cultural Centre"
           required
         />
       </div>

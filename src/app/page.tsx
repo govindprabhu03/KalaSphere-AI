@@ -46,7 +46,7 @@ export default function Home() {
         <section id="modules" className="mx-auto max-w-6xl px-4 pb-24">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-              Everything a Ravindra Bhavan needs
+              Everything a cultural institution needs
             </h2>
             <p className="mt-3 text-muted-foreground">
               One platform, delivered module by module — each built on a secure,

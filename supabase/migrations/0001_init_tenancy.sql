@@ -16,7 +16,7 @@
 -- 1. Tables
 -- ---------------------------------------------------------------------
 
--- Each row is one Ravindra Bhavan (tenant).
+-- Each row is one organization / institution (tenant).
 create table if not exists public.organizations (
   id            uuid primary key default gen_random_uuid(),
   slug          text not null unique,
@@ -343,7 +343,7 @@ grant execute on function
 
 insert into public.roles (key, name, description, is_org_role) values
   ('super_admin', 'Super Admin', 'Platform-wide administrator', false),
-  ('admin',       'Admin',       'Manages one Ravindra Bhavan', true),
+  ('admin',       'Admin',       'Manages one organization', true),
   ('faculty',     'Faculty',     'Teaches classes, marks attendance, evaluates students', true),
   ('parent',      'Parent',      'Guardian linked to a student', true),
   ('student',     'Student',     'Enrolled learner', true),

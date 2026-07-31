@@ -15,7 +15,7 @@ const admin = createClient(url, serviceKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const EMAIL = "ravindra-ui-test@example.com";
+const EMAIL = "kalasphere-ui-test@example.com";
 const PW = "Test-passw0rd!";
 
 async function findUser(email) {
@@ -42,7 +42,7 @@ if (mode === "create") {
     email: EMAIL,
     password: PW,
     email_confirm: true,
-    user_metadata: { full_name: "Ravindra UI Test" },
+    user_metadata: { full_name: "KalaSphere UI Test" },
   });
   if (error) throw error;
   console.log(`CREATED ${EMAIL} / ${PW}`);

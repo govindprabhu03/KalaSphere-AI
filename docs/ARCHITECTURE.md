@@ -30,7 +30,7 @@ event management). One codebase serves many institutions, each a tenant "organiz
 ## Roles
 
 - `super_admin` — platform-wide, stored as `profiles.is_platform_admin`.
-- Org roles live on `organization_members.role`, scoping a user to one Ravindra Bhavan.
+- Org roles live on `organization_members.role`, scoping a user to one organization.
 - RLS uses SECURITY DEFINER helpers (`is_platform_admin`, `is_org_member`, `has_org_role`,
   `user_org_role`) so policies never recurse on the membership table.
 

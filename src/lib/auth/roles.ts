@@ -2,7 +2,7 @@
  * Role model for the platform.
  *
  * - Org roles live on `organization_members.role` and scope a user to ONE
- *   Ravindra Bhavan (organization).
+ *   organization.
  * - `super_admin` is platform-wide (stored as `profiles.is_platform_admin`),
  *   not an org membership.
  * - `public` means "signed in but not a member of the active org" (or a

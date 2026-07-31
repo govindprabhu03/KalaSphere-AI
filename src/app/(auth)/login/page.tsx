@@ -26,7 +26,7 @@ export default async function LoginPage({
     <Card className="py-6">
       <CardHeader>
         <CardTitle className="text-lg">Welcome back</CardTitle>
-        <CardDescription>Log in to your Ravindra Bhavan account.</CardDescription>
+        <CardDescription>Log in to your KalaSphere AI account.</CardDescription>
       </CardHeader>
       <CardContent>
         <LoginForm oauthError={error} />

@@ -6,6 +6,7 @@ import { formatMoney } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { KitchenRealtime } from "./kitchen-realtime";
 
 export const metadata = { title: "Kitchen" };
 
@@ -30,9 +31,15 @@ export default async function KitchenPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="mb-1 font-heading text-2xl font-semibold tracking-tight">Kitchen board</h1>
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">
+          Kitchen board
+        </h1>
+        <KitchenRealtime orgId={ctx.activeOrgId!} />
+      </div>
       <p className="mb-6 text-sm text-muted-foreground">
-        Active orders — advance each as it&apos;s prepared. Refresh for new orders.
+        Active orders — advance each as it&apos;s prepared. New orders and status
+        changes appear live.
       </p>
 
       {rows.length === 0 ? (

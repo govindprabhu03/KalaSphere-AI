@@ -75,8 +75,11 @@ export default async function OrgHomePage({
       <PublicOrgHeader name={org.name} slug={org.slug} />
       <main className="mx-auto max-w-4xl px-4 py-10">
         <h1 className="font-heading text-3xl font-semibold tracking-tight">{org.name}</h1>
+        {org.tagline && (
+          <p className="mt-2 text-base text-muted-foreground">{org.tagline}</p>
+        )}
 
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
           {QUICK_LINKS.map(([path, label]) => (
             <Link
               key={path}

@@ -20,6 +20,7 @@ import {
   ScanLine,
   Award,
   NotebookPen,
+  Paintbrush2,
 } from "lucide-react";
 import type { AppRole } from "@/lib/auth/roles";
 
@@ -110,6 +111,12 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Members",
     href: "/dashboard/members",
     icon: Users,
+    roles: ["admin", "super_admin"],
+  },
+  {
+    label: "Branding",
+    href: "/dashboard/branding",
+    icon: Paintbrush2,
     roles: ["admin", "super_admin"],
   },
 ];

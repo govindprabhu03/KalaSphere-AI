@@ -25,6 +25,7 @@ export interface Database {
           name: string;
           logo_url: string | null;
           primary_color: string;
+          tagline: string | null;
           locale: string;
           is_active: boolean;
           created_at: string;
@@ -36,6 +37,7 @@ export interface Database {
           name: string;
           logo_url?: string | null;
           primary_color?: string;
+          tagline?: string | null;
           locale?: string;
           is_active?: boolean;
           created_at?: string;
@@ -47,6 +49,7 @@ export interface Database {
           name?: string;
           logo_url?: string | null;
           primary_color?: string;
+          tagline?: string | null;
           locale?: string;
           is_active?: boolean;
           created_at?: string;
@@ -959,6 +962,7 @@ export interface Database {
           slug: string;
           primary_color: string;
           logo_url: string | null;
+          tagline: string | null;
         }[];
       };
       enroll_in_workshop: {

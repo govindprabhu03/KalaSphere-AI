@@ -8,8 +8,16 @@ import { createClient } from "@/lib/supabase/client";
  * its public URL through a hidden input, so the surrounding form submits the
  * URL to the existing server action unchanged.
  */
-export function ImageUpload({ name, orgId }: { name: string; orgId: string }) {
-  const [url, setUrl] = useState("");
+export function ImageUpload({
+  name,
+  orgId,
+  defaultUrl,
+}: {
+  name: string;
+  orgId: string;
+  defaultUrl?: string;
+}) {
+  const [url, setUrl] = useState(defaultUrl ?? "");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

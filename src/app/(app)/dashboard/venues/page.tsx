@@ -58,9 +58,17 @@ export default async function VenuesPage() {
                     </div>
                   )}
                 </div>
-                <form action={deleteVenueAction.bind(null, v.id)}>
-                  <Button type="submit" variant="ghost" size="sm">Delete</Button>
-                </form>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Link
+                    href={`/dashboard/venues/${v.id}/calendar`}
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                  >
+                    Calendar
+                  </Link>
+                  <form action={deleteVenueAction.bind(null, v.id)}>
+                    <Button type="submit" variant="ghost" size="sm">Delete</Button>
+                  </form>
+                </div>
               </div>
             </Card>
           ))}

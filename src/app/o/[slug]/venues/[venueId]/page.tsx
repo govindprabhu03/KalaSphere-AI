@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getOptionalContext } from "@/lib/auth/context";
-import { formatEventDateTime, formatMoney } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
 import { PublicOrgHeader } from "@/components/site/public-org-header";
+import { MonthCalendar } from "@/components/month-calendar";
 import { BookingForm } from "./booking-form";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -58,21 +59,8 @@ export default async function PublicVenuePage({
           <p className="mt-4 text-sm whitespace-pre-wrap">{venue.description}</p>
         )}
 
-        <h2 className="mt-8 mb-2 text-sm font-medium text-muted-foreground">Already booked</h2>
-        {busyRows.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No upcoming bookings — plenty of availability.
-          </p>
-        ) : (
-          <div className="grid gap-2">
-            {busyRows.map((b, i) => (
-              <div key={i} className="rounded-lg border border-border/60 px-3 py-2 text-sm">
-                {formatEventDateTime(b.starts_at)} → {formatEventDateTime(b.ends_at)}{" "}
-                <span className="text-muted-foreground">· {b.title}</span>
-              </div>
-            ))}
-          </div>
-        )}
+        <h2 className="mt-8 mb-3 text-sm font-medium text-muted-foreground">Availability</h2>
+        <MonthCalendar bookings={busyRows} />
 
         <h2 className="mt-8 mb-3 text-sm font-medium text-muted-foreground">Request a booking</h2>
         {!ctx ? (

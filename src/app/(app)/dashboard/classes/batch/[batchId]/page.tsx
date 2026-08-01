@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { requireContext } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AddSessionForm } from "./add-session-form";
@@ -10,6 +11,8 @@ import { AttendanceGrid } from "./attendance-grid";
 import { LinkParentForm } from "./link-parent-form";
 import { AddAssignmentForm } from "./add-assignment-form";
 import { deleteAssignmentAction } from "@/lib/assignments/actions";
+import { AddPracticeForm } from "./add-practice-form";
+import { deletePracticeItemAction } from "@/lib/practice/actions";
 
 export const metadata = { title: "Batch" };
 
@@ -61,6 +64,14 @@ export default async function BatchDetailPage({
     .eq("batch_id", batchId)
     .order("created_at", { ascending: false });
   const asgRows = assignments ?? [];
+
+  const { data: practice } = await supabase
+    .from("practice_items")
+    .select("*")
+    .eq("batch_id", batchId)
+    .order("day_of_week", { ascending: true, nullsFirst: false });
+  const practiceRows = practice ?? [];
+  const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -152,6 +163,61 @@ export default async function BatchDetailPage({
             </CardHeader>
             <CardContent>
               <AddAssignmentForm batchId={batchId} />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <h2 className="mt-8 mb-3 text-sm font-medium text-muted-foreground">Practice plan</h2>
+      <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
+        <div>
+          {practiceRows.length === 0 ? (
+            <Card className="p-6 text-center text-sm text-muted-foreground">
+              No practice items yet — set a routine for your students.
+            </Card>
+          ) : (
+            <div className="grid gap-3">
+              {practiceRows.map((p) => (
+                <Card key={p.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium">{p.title}</span>
+                        <Badge variant="secondary">
+                          {p.day_of_week === null
+                            ? "Any day"
+                            : DAY_LABELS[p.day_of_week]}
+                        </Badge>
+                        {p.duration_min && (
+                          <span className="text-xs text-muted-foreground">
+                            {p.duration_min} min
+                          </span>
+                        )}
+                      </div>
+                      {p.notes && (
+                        <p className="mt-1 text-sm whitespace-pre-wrap text-muted-foreground">
+                          {p.notes}
+                        </p>
+                      )}
+                    </div>
+                    <form action={deletePracticeItemAction.bind(null, p.id, batchId)}>
+                      <Button type="submit" variant="ghost" size="xs">
+                        Delete
+                      </Button>
+                    </form>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+        <div>
+          <Card className="py-5">
+            <CardHeader>
+              <CardTitle className="text-sm">Add practice</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AddPracticeForm batchId={batchId} />
             </CardContent>
           </Card>
         </div>

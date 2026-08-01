@@ -16,6 +16,7 @@
     "verify:more": "node scripts/verify-phases-4-7.mjs",
     "verify:certs": "node scripts/verify-certificates.mjs",
     "verify:assign": "node scripts/verify-assignments.mjs",
+    "verify:practice": "node scripts/verify-practice.mjs",
     "db:migrate": "node scripts/apply-migration.mjs"
   },
   "dependencies": {

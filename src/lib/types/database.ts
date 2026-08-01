@@ -632,6 +632,35 @@ export interface Database {
         };
         Relationships: [];
       };
+      practice_items: {
+        Row: {
+          id: string;
+          batch_id: string;
+          organization_id: string;
+          title: string;
+          notes: string | null;
+          day_of_week: number | null;
+          duration_min: number | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          batch_id: string;
+          organization_id: string;
+          title: string;
+          notes?: string | null;
+          day_of_week?: number | null;
+          duration_min?: number | null;
+          created_by?: string | null;
+        };
+        Update: {
+          title?: string;
+          notes?: string | null;
+          day_of_week?: number | null;
+          duration_min?: number | null;
+        };
+        Relationships: [];
+      };
       student_evaluations: {
         Row: {
           id: string;
@@ -1166,6 +1195,18 @@ export interface Database {
           grade: string | null;
           feedback: string | null;
           submitted_at: string;
+        }[];
+      };
+      list_my_practice: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: string;
+          title: string;
+          notes: string | null;
+          day_of_week: number | null;
+          duration_min: number | null;
+          batch_name: string;
+          class_title: string;
         }[];
       };
     };

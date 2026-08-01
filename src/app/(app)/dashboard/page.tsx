@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { requireContext } from "@/lib/auth/context";
+import { createClient } from "@/lib/supabase/server";
 import { ROLE_LABELS } from "@/lib/auth/roles";
 import {
   Card,
@@ -39,9 +40,24 @@ const MODULES: Module[] = [
   { icon: MessagesSquare, title: "Community", description: "News, announcements and the community board.", href: "/dashboard/community" },
 ];
 
+const DAY_LABELS = [
+  "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
+];
+
 export default async function DashboardPage() {
   const ctx = await requireContext();
   const isAdmin = ctx.role === "admin" || ctx.role === "super_admin";
+
+  const supabase = await createClient();
+  const { data: practice } = await supabase.rpc("list_my_practice");
+  const practiceRows = practice ?? [];
+  const practiceByDay = new Map<string, typeof practiceRows>();
+  for (const p of practiceRows) {
+    const key = p.day_of_week === null ? "Any day" : DAY_LABELS[p.day_of_week];
+    const arr = practiceByDay.get(key) ?? [];
+    arr.push(p);
+    practiceByDay.set(key, arr);
+  }
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -75,6 +91,45 @@ export default async function DashboardPage() {
               <Users className="size-4" />
               Go to Members
             </Link>
+          </CardContent>
+        </Card>
+      )}
+
+      {practiceRows.length > 0 && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-base">Your practice plan</CardTitle>
+            <CardDescription>
+              Your teachers&apos; recommended riyaz for the week.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            {[...practiceByDay.entries()].map(([day, items]) => (
+              <div key={day}>
+                <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                  {day}
+                </p>
+                <ul className="grid gap-1.5">
+                  {items.map((p) => (
+                    <li
+                      key={p.id}
+                      className="flex items-baseline justify-between gap-3 rounded-lg bg-muted/40 px-3 py-2 text-sm"
+                    >
+                      <span>
+                        <span className="font-medium">{p.title}</span>
+                        {p.notes ? (
+                          <span className="text-muted-foreground"> — {p.notes}</span>
+                        ) : null}
+                      </span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {p.class_title}
+                        {p.duration_min ? ` · ${p.duration_min} min` : ""}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </CardContent>
         </Card>
       )}

@@ -62,6 +62,45 @@ export async function askAssistantAction(question: string): Promise<AiState> {
   }
 }
 
+export async function analyzeEventFeedbackAction(eventId: string): Promise<AiState> {
+  const ctx = await getOptionalContext();
+  if (!ctx) return { error: "Please log in." };
+  if (ctx.role !== "admin" && ctx.role !== "super_admin") {
+    return { error: "Only admins can analyse feedback." };
+  }
+  if (!isGeminiConfigured()) {
+    return { error: "AI isn't configured (GEMINI_API_KEY)." };
+  }
+
+  const supabase = await createClient();
+  // event_feedback is readable by org admins under RLS, scoped to this event.
+  const { data: fb } = await supabase
+    .from("event_feedback")
+    .select("rating, comment")
+    .eq("event_id", eventId);
+  const rows = fb ?? [];
+  if (rows.length === 0) return { error: "No feedback to analyse yet." };
+
+  const avg = (rows.reduce((s, f) => s + f.rating, 0) / rows.length).toFixed(1);
+  const lines = rows
+    .map((f, i) => `${i + 1}. ${f.rating}/5${f.comment ? ` — "${f.comment}"` : ""}`)
+    .join("\n");
+
+  const system =
+    "You help a cultural institution understand its event feedback. From the ratings " +
+    "and comments below, write a short, warm summary for the organiser covering: overall " +
+    "sentiment, what attendees liked, and what to improve. Use 3–5 concise bullet points. " +
+    "Base everything ONLY on the feedback provided — never invent details.";
+  const prompt = `Event feedback (${rows.length} responses, average ${avg}/5):\n${lines}`;
+
+  try {
+    const answer = await geminiGenerate(prompt, system);
+    return { answer: answer || "Couldn't summarise the feedback." };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "AI request failed." };
+  }
+}
+
 export async function generateEventDescriptionAction(
   title: string,
   category: string,

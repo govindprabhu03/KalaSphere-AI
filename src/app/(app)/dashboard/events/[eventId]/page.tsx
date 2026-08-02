@@ -12,7 +12,9 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { isGeminiConfigured } from "@/lib/ai/gemini";
 import { IssueCertificates } from "./issue-certificates";
+import { FeedbackInsights } from "./feedback-insights";
 
 export default async function EventDetailPage({
   params,
@@ -215,6 +217,7 @@ export default async function EventDetailPage({
               ))}
             </ul>
           </Card>
+          {isGeminiConfigured() && <FeedbackInsights eventId={eventId} />}
         </div>
       )}
     </div>
